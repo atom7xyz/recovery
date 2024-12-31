@@ -1,0 +1,61 @@
+# Top-level Gradle files
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+
+# Subproject build folders
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+# Spring Tool Suite (STS)
+.apt_generated/
+.classpath
+.factorypath
+.project
+.settings/
+.springBeans
+.sts4-cache/
+bin/
+!**/src/main/**/bin/
+!**/src/test/**/bin/
+
+# IntelliJ IDEA
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+!**/src/main/**/out/
+!**/src/test/**/out/
+
+# NetBeans
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+# Visual Studio Code
+.vscode/
+
+# Kotlin
+.kotlin/
+
+# Help files
+HELP.md
+
+# Exclude IDE and editor-specific files for subprojects
+**/recovery-server/.idea/
+**/recovery-server/*.iml
+**/recovery-server/.kotlin/
+**/recovery-server/build/
+**/recovery-server/.gradle/
+
+**/recovery-web/.idea/
+**/recovery-web/*.iml
+**/recovery-web/.kotlin/
+**/recovery-web/build/
+**/recovery-web/.gradle/
+
+# Logs
+*.log

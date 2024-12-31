@@ -1,0 +1,5 @@
+web:
+  api-key: "changeme"
+  scheme: "http"
+  host: "localhost"
+  port: 8080

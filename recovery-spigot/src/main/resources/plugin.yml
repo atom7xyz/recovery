@@ -1,0 +1,8 @@
+name: "recovery-server"
+version: "1.0-SNAPSHOT-all"
+description: "Recovery server."
+main: xyz.atom7.recoveryServer.RecoveryServer
+authors: [ "atom7xyz" ]
+website: "https://atom7.xyz"
+api-version : "1.21"
+depends: [ "helper", "stone-spigot", "ViaVersion" ]
