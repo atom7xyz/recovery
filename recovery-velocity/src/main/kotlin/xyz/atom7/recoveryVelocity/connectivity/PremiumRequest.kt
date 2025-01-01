@@ -1,28 +1,29 @@
-package xyz.atom7.recoveryServer.connectivity
+package xyz.atom7.recoveryVelocity.connectivity
 
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import org.bukkit.configuration.Configuration
-import xyz.atom7.recoveryServer.exceptions.RecoveryRequestException
-import xyz.atom7.recoveryServer.providers.service.GsonProvider
-import xyz.atom7.recoveryServer.serialization.Player
-import xyz.atom7.recoveryServer.serialization.SerialException
-import xyz.atom7.recoveryServer.serialization.ValidCode
+import org.spongepowered.configurate.CommentedConfigurationNode
+import xyz.atom7.recoveryVelocity.exceptions.PremiumRequestException
+import xyz.atom7.recoveryVelocity.providers.GsonProvider
+import xyz.atom7.recoveryVelocity.serialization.SerialException
 import xyz.sorridi.stone.common.threading.Pool
 import java.util.concurrent.CompletableFuture
 
-class RecoveryRequest(
-    config: Configuration
-) {
-
+class PremiumRequest(config: CommentedConfigurationNode)
+{
     private val pool: Pool = Pool(1)
     private val client: OkHttpClient = OkHttpClient()
 
-    private val scheme = config.getString("web.scheme")!!
-    private val host = config.getString("web.host")!!
-    private val port = config.getInt("web.port")
-    private val apiKey = config.getString("web.api-key")!!
+    private val webNode = config.node("web")
+    private val scheme  = webNode.node("scheme").getString("http")
+    private val host    = webNode.node("host").getString("http")
+    private val port    = webNode.node("port").getInt(8080)
+    private val apiKey  = webNode.node("api-key").getString("changeme")
+
+    private val domainsNode = config.node("domains")
+    val premiumDomain: String = domainsNode.node("premium").getString("changeme")
+    val crackedDomain: String = domainsNode.node("cracked").getString("changeme")
 
     fun shutdownPool()
     {
@@ -43,7 +44,7 @@ class RecoveryRequest(
 
                 if (!response.isSuccessful) {
                     val exception = GsonProvider.gson.fromJson(strResponse, SerialException::class.java)
-                    throw RecoveryRequestException(httpUrl, exception)
+                    throw PremiumRequestException(httpUrl, exception)
                 }
 
                 if (strResponse.isNullOrEmpty()) {
@@ -58,43 +59,31 @@ class RecoveryRequest(
         }
     }
 
-    fun sendCreatePlayer(username: String,
-                         address: String,
-                         premium: Boolean,
-                         clientVersion: String,
-                         codeUsed: Int) : CompletableFuture<Player>
+    fun sendPremiumPlayer(username: String, premium: Boolean)
     {
         val httpUrl = HttpUrl.Builder()
             .scheme(scheme)
             .host(host)
             .port(port)
-            .addPathSegments("player/create")
+            .addPathSegments("player/premium/set")
             .addQueryParameter("username", username)
-            .addQueryParameter("address", address)
             .addQueryParameter("premium", premium.toString())
-            .addQueryParameter("clientVersion", clientVersion)
-            .addQueryParameter("codeUsed", codeUsed.toString())
             .build()
 
-        return send(httpUrl) { response ->
-            GsonProvider.gson.fromJson(response, Player::class.java)
-        }
+        send(httpUrl) { }
     }
 
-    fun sendCheckCode(username: String, codeUsed: Int): CompletableFuture<ValidCode>
+    fun removePremiumPlayer(username: String)
     {
         val httpUrl = HttpUrl.Builder()
             .scheme(scheme)
             .host(host)
             .port(port)
-            .addPathSegments("code/check")
+            .addPathSegments("player/premium/remove")
             .addQueryParameter("username", username)
-            .addQueryParameter("code", codeUsed.toString())
             .build()
 
-        return send(httpUrl) { response ->
-            GsonProvider.gson.fromJson(response, ValidCode::class.java)
-        }
+        send(httpUrl) { }
     }
 
 }

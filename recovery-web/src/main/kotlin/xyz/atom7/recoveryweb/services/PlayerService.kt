@@ -3,6 +3,7 @@ package xyz.atom7.recoveryweb.services
 import org.springframework.stereotype.Service
 import xyz.atom7.recoveryweb.entities.Player
 import xyz.atom7.recoveryweb.exceptions.types.RecoveryCodeNotFound
+import xyz.atom7.recoveryweb.providers.PremiumStatusesProvider
 import xyz.atom7.recoveryweb.repositories.CodeRepository
 import xyz.atom7.recoveryweb.repositories.PlayerRepository
 
@@ -42,6 +43,21 @@ class PlayerService(val codeRepository: CodeRepository, val playerRepository: Pl
     fun historyPlayer(username: String): MutableList<Player>
     {
         return playerRepository.findPlayerByUsername(username)
+    }
+
+    fun setPremiumPlayer(username: String, premium: Boolean)
+    {
+        PremiumStatusesProvider.set(username, premium)
+    }
+
+    fun isPremiumPlayer(username: String): Boolean
+    {
+        return PremiumStatusesProvider.isPremium(username) ?: false
+    }
+
+    fun removePremiumPlayer(username: String)
+    {
+        PremiumStatusesProvider.remove(username)
     }
 
 }

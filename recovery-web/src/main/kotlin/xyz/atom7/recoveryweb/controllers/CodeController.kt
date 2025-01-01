@@ -1,9 +1,6 @@
 package xyz.atom7.recoveryweb.controllers
 
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import xyz.atom7.recoveryweb.entities.RecoveryCode
 import xyz.atom7.recoveryweb.services.CodeService
 
@@ -12,7 +9,7 @@ import xyz.atom7.recoveryweb.services.CodeService
 class CodeController(val codeService: CodeService)
 {
 
-    @GetMapping("/create")
+    @PostMapping("/create")
     fun createCode(@RequestParam username: String): RecoveryCode
     {
         return codeService.createCode(username)
@@ -24,7 +21,7 @@ class CodeController(val codeService: CodeService)
         return codeService.checkCode(username, code)
     }
 
-    @GetMapping("/delete")
+    @PostMapping("/delete")
     fun deleteCode(@RequestParam username: String, @RequestParam code: String): Map<String, Boolean>
     {
         return codeService.deleteCode(username, code)

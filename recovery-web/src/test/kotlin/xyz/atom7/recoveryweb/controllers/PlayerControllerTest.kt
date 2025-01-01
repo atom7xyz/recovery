@@ -8,6 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import xyz.atom7.recoveryweb.clearLastZeroes
@@ -68,7 +69,7 @@ class PlayerControllerTest
         val expirationDate = clearLastZeroes(recoveryCode.expirationDate)
 
         mockMvc.perform(
-            get("/player/create")
+            post("/player/create")
                 .header("X-API-KEY", "changeme")
                 .param("username", player.username)
                 .param("address", player.address)
@@ -155,6 +156,42 @@ class PlayerControllerTest
                     }
                 ]
                 """.trimIndent()))
+    }
+
+    @Test
+    fun `should return if the player is premium (true)`()
+    {
+        val username = "testuser"
+        val isPremium = true
+
+        given(playerService.isPremiumPlayer(username)).willReturn(isPremium)
+
+        mockMvc.perform(
+            get("/player/premium/check")
+                .header("X-API-KEY", "changeme")
+                .param("username", username)
+            )
+            .andExpect(status().isOk)
+            .andExpect(
+                content().string("$isPremium"))
+    }
+
+    @Test
+    fun `should return if the player is premium (false)`()
+    {
+        val username = "testuser"
+        val isPremium = false
+
+        given(playerService.isPremiumPlayer(username)).willReturn(isPremium)
+
+        mockMvc.perform(
+            get("/player/premium/check")
+                .header("X-API-KEY", "changeme")
+                .param("username", username)
+            )
+            .andExpect(status().isOk)
+            .andExpect(
+                content().string("$isPremium"))
     }
 
 }

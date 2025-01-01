@@ -11,12 +11,9 @@ import xyz.atom7.recoveryServer.commands.VerifyCommand
 import xyz.atom7.recoveryServer.commands.VersionCommand
 import xyz.atom7.recoveryServer.connectivity.RecoveryRequest
 import xyz.atom7.recoveryServer.listeners.PlayerEvents
-import xyz.atom7.recoveryServer.providers.*
-import xyz.sorridi.stone.common.data.structures.SoftCleaner
-import xyz.sorridi.stone.spigot.utils.PluginVersion
 
 @Plugin(
-    name = "recovery-server",
+    name = "recovery-spigot",
     version = "1.0-SNAPSHOT-all",
     description = "Recovery server.",
     authors = ["atom7xyz"],
@@ -27,7 +24,7 @@ import xyz.sorridi.stone.spigot.utils.PluginVersion
 )
 
 @HelperImplementationPlugin
-class RecoveryServer : ExtendedJavaPlugin()
+class RecoverySpigot : ExtendedJavaPlugin()
 {
     lateinit var request: RecoveryRequest
 

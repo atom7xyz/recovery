@@ -1,9 +1,6 @@
 package xyz.atom7.recoveryweb.controllers
 
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import xyz.atom7.recoveryweb.entities.Player
 import xyz.atom7.recoveryweb.services.PlayerService
 
@@ -12,7 +9,7 @@ import xyz.atom7.recoveryweb.services.PlayerService
 class PlayerController(val playerService: PlayerService)
 {
 
-    @GetMapping("/create")
+    @PostMapping("/create")
     fun createPlayer(@RequestParam username: String,
                      @RequestParam address: String,
                      @RequestParam premium: Boolean,
@@ -26,6 +23,24 @@ class PlayerController(val playerService: PlayerService)
     fun historyPlayer(@RequestParam username: String): MutableList<Player>
     {
         return playerService.historyPlayer(username)
+    }
+
+    @PostMapping("/premium/set")
+    fun premiumSetPlayer(@RequestParam username: String, @RequestParam premium: Boolean)
+    {
+        playerService.setPremiumPlayer(username, premium)
+    }
+
+    @GetMapping("/premium/check")
+    fun premiumCheckPlayer(@RequestParam username: String): Boolean
+    {
+        return playerService.isPremiumPlayer(username)
+    }
+
+    @PostMapping("/premium/remove")
+    fun premiumRemovePlayer(@RequestParam username: String)
+    {
+        playerService.removePremiumPlayer(username)
     }
 
 }

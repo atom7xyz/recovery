@@ -2,7 +2,6 @@ package xyz.atom7.recoveryServer.commands
 
 import com.google.common.collect.ImmutableList
 import com.viaversion.viaversion.api.Via
-import com.viaversion.viaversion.api.ViaAPI
 import me.lucko.helper.Schedulers
 import me.lucko.helper.command.context.CommandContext
 import me.lucko.helper.command.functional.FunctionalCommandHandler
@@ -10,7 +9,7 @@ import net.kyori.adventure.text.TextReplacementConfig
 import org.bukkit.command.CommandSender
 import org.bukkit.command.ConsoleCommandSender
 import org.bukkit.entity.Player
-import xyz.atom7.recoveryServer.RecoveryServer
+import xyz.atom7.recoveryServer.RecoverySpigot
 import xyz.atom7.recoveryServer.exceptions.InvalidCodeException
 import xyz.atom7.recoveryServer.exceptions.RecoveryRequestException
 import xyz.atom7.recoveryServer.providers.player.FriendlyExpProvider
@@ -18,11 +17,9 @@ import xyz.atom7.recoveryServer.providers.player.JoinDelayProvider
 import xyz.atom7.recoveryServer.providers.player.TriesProvider
 import xyz.atom7.recoveryServer.providers.player.VerifiedProvider
 import xyz.atom7.recoveryServer.utils.*
-import xyz.sorridi.stone.common.commands.StoneCommand
-import xyz.sorridi.stone.spigot.utils.PluginVersion
 import java.util.concurrent.TimeUnit
 
-class VerifyCommand(plugin: RecoveryServer) : FunctionalCommandHandler<CommandSender>
+class VerifyCommand(plugin: RecoverySpigot) : FunctionalCommandHandler<CommandSender>
 {
     private val requester = plugin.request
 
@@ -60,7 +57,7 @@ class VerifyCommand(plugin: RecoveryServer) : FunctionalCommandHandler<CommandSe
 
                 requester.sendCreatePlayer(
                     username = name,
-                    address = player.address.address.toString(), // todo check if it's correct
+                    address = player.address?.address.toString(), // todo check if it's correct
                     premium = false, // todo check correctly for premium
                     clientVersion = Via.getAPI().getPlayerVersion(player).toString(), // todo convert
                     codeUsed = code

@@ -1,7 +1,7 @@
-name: "recovery-server"
+name: "recovery-spigot"
 version: "1.0-SNAPSHOT-all"
 description: "Recovery server."
-main: xyz.atom7.recoveryServer.RecoveryServer
+main: xyz.atom7.recoveryServer.RecoverySpigot
 authors: [ "atom7xyz" ]
 website: "https://atom7.xyz"
 api-version : "1.21"

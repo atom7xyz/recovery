@@ -8,6 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import xyz.atom7.recoveryweb.clearLastZeroes
@@ -42,9 +43,9 @@ class CodeControllerTest
         val expirationDate = clearLastZeroes(recoveryCode.expirationDate)
 
         mockMvc.perform(
-                get("/code/create")
-                    .header("X-API-KEY", "changeme")
-                    .param("username", recoveryCode.username)
+            post("/code/create")
+                .header("X-API-KEY", "changeme")
+                .param("username", recoveryCode.username)
             )
             .andExpect(status().isOk)
             .andExpect(content().json(
@@ -75,10 +76,10 @@ class CodeControllerTest
             .willReturn(mapOf("valid" to true))
 
         mockMvc.perform(
-                get("/code/check")
-                    .header("X-API-KEY", "changeme")
-                    .param("username", recoveryCode.username)
-                    .param("code", recoveryCode.code)
+            get("/code/check")
+                .header("X-API-KEY", "changeme")
+                .param("username", recoveryCode.username)
+                .param("code", recoveryCode.code)
             )
             .andExpect(status().isOk)
             .andExpect(content().json(
@@ -108,7 +109,7 @@ class CodeControllerTest
                 .header("X-API-KEY", "changeme")
                 .param("username", recoveryCode.username)
                 .param("code", recoveryCode.code)
-        )
+            )
             .andExpect(status().isOk)
             .andExpect(content().json(
                 """
@@ -134,10 +135,10 @@ class CodeControllerTest
             .willReturn(mapOf("deleted" to true))
 
         mockMvc.perform(
-                get("/code/delete")
-                    .header("X-API-KEY", "changeme")
-                    .param("username", recoveryCode.username)
-                    .param("code", recoveryCode.code)
+            post("/code/delete")
+                .header("X-API-KEY", "changeme")
+                .param("username", recoveryCode.username)
+                .param("code", recoveryCode.code)
             )
             .andExpect(status().isOk)
             .andExpect(content().json(
@@ -164,10 +165,10 @@ class CodeControllerTest
             .willReturn(mapOf("deleted" to false))
 
         mockMvc.perform(
-                get("/code/delete")
-                    .header("X-API-KEY", "changeme")
-                    .param("username", recoveryCode.username)
-                    .param("code", recoveryCode.code)
+            post("/code/delete")
+                .header("X-API-KEY", "changeme")
+                .param("username", recoveryCode.username)
+                .param("code", recoveryCode.code)
             )
             .andExpect(status().isOk)
             .andExpect(content().json(
