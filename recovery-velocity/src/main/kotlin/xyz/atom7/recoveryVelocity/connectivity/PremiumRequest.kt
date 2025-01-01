@@ -7,6 +7,8 @@ import org.spongepowered.configurate.CommentedConfigurationNode
 import xyz.atom7.recoveryVelocity.exceptions.PremiumRequestException
 import xyz.atom7.recoveryVelocity.providers.GsonProvider
 import xyz.atom7.recoveryVelocity.serialization.SerialException
+import xyz.atom7.recoveryVelocity.utils.RequestType
+import xyz.atom7.recoveryVelocity.utils.emptyRequestBody
 import xyz.sorridi.stone.common.threading.Pool
 import java.util.concurrent.CompletableFuture
 
@@ -30,12 +32,22 @@ class PremiumRequest(config: CommentedConfigurationNode)
         pool.shutdown()
     }
 
-    private fun <T> send(httpUrl: HttpUrl, parser: (String) -> T): CompletableFuture<T>
+    private fun <T> send(httpUrl: HttpUrl, type: RequestType, parser: (String) -> T): CompletableFuture<T>
     {
-        val request = Request.Builder()
+        var prototype = Request.Builder()
             .url(httpUrl)
             .addHeader("X-API-KEY", apiKey)
-            .build()
+
+        prototype = when (type)
+        {
+            RequestType.GET -> prototype.get()
+            RequestType.POST -> prototype.post(emptyRequestBody)
+            RequestType.PUT -> prototype.put(emptyRequestBody)
+            RequestType.PATCH -> prototype.patch(emptyRequestBody)
+            RequestType.DELETE -> prototype.delete(emptyRequestBody)
+        }
+
+        val request = prototype.build()
 
         return CompletableFuture.supplyAsync({
 
@@ -54,7 +66,6 @@ class PremiumRequest(config: CommentedConfigurationNode)
                 parser(strResponse)
             }
         }, pool.executor).exceptionally { throwable ->
-            println("CompletableFuture completed exceptionally: ${throwable.message}")
             throw throwable
         }
     }
@@ -70,7 +81,7 @@ class PremiumRequest(config: CommentedConfigurationNode)
             .addQueryParameter("premium", premium.toString())
             .build()
 
-        send(httpUrl) { }
+        send(httpUrl, RequestType.PUT) { }
     }
 
     fun removePremiumPlayer(username: String)
@@ -83,7 +94,7 @@ class PremiumRequest(config: CommentedConfigurationNode)
             .addQueryParameter("username", username)
             .build()
 
-        send(httpUrl) { }
+        send(httpUrl, RequestType.DELETE) { }
     }
 
 }

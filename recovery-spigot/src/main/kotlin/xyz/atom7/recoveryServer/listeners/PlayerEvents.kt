@@ -1,6 +1,5 @@
 package xyz.atom7.recoveryServer.listeners
 
-import com.viaversion.viaversion.api.Via
 import io.papermc.paper.event.player.AsyncChatEvent
 import me.lucko.helper.Events
 import me.lucko.helper.Schedulers
@@ -84,9 +83,6 @@ class PlayerEvents(private val plugin: Plugin) : TerminableModule
 
                 handleJoin(it.player)
                 it.joinMessage(emptyTextComponent)
-
-                it.player.sendMessage("you are using version:")
-                it.player.sendMessage("${Via.getAPI().getPlayerVersion(it.player)}") // todo remove
             }
             .bindWith(consumer)
     }

@@ -1,2 +1,16 @@
+spring:
+  datasource:
+    url: jdbc:h2:file:./data/db;DB_CLOSE_DELAY=-1;AUTO_SERVER=FALSE
+    driverClassName: org.h2.Driver
+    username: sa
+    password: password
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: update
+  h2:
+    console:
+      enabled: true
+
 app:
   api-key: "changeme"

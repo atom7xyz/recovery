@@ -11,6 +11,7 @@ import xyz.atom7.recoveryServer.commands.VerifyCommand
 import xyz.atom7.recoveryServer.commands.VersionCommand
 import xyz.atom7.recoveryServer.connectivity.RecoveryRequest
 import xyz.atom7.recoveryServer.listeners.PlayerEvents
+import xyz.sorridi.stone.common.data.structures.SoftCleaner
 
 @Plugin(
     name = "recovery-spigot",
@@ -30,6 +31,7 @@ class RecoverySpigot : ExtendedJavaPlugin()
 
     override fun enable()
     {
+        saveDefaultConfig()
         request = RecoveryRequest(config)
 
         bindModule(PlayerEvents(this))
@@ -53,7 +55,7 @@ class RecoverySpigot : ExtendedJavaPlugin()
         }
 
         // stone
-        // SoftCleaner.setLogging(false)
+        SoftCleaner.setLogging(false)
     }
 
     override fun disable()

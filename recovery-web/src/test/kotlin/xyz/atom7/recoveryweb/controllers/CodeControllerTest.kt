@@ -7,8 +7,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import xyz.atom7.recoveryweb.clearLastZeroes
@@ -135,7 +134,7 @@ class CodeControllerTest
             .willReturn(mapOf("deleted" to true))
 
         mockMvc.perform(
-            post("/code/delete")
+            delete("/code/delete")
                 .header("X-API-KEY", "changeme")
                 .param("username", recoveryCode.username)
                 .param("code", recoveryCode.code)
@@ -165,7 +164,7 @@ class CodeControllerTest
             .willReturn(mapOf("deleted" to false))
 
         mockMvc.perform(
-            post("/code/delete")
+            delete("/code/delete")
                 .header("X-API-KEY", "changeme")
                 .param("username", recoveryCode.username)
                 .param("code", recoveryCode.code)

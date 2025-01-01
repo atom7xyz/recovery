@@ -47,38 +47,59 @@ class VerifyCommand(plugin: RecoverySpigot) : FunctionalCommandHandler<CommandSe
             return
         }
 
-        requester.sendCheckCode(name, code)
-            .thenApplyAsync ({
+        requester.sendCheckCode(
+            username = name,
+            codeUsed = code
+        ).thenApplyAsync({
 
-                // check if the code is valid (response={ "valid": <boolean> })
-                if (!it.valid) {
-                    throw InvalidCodeException()
-                }
+            // check if the code is valid (response={ "valid": <boolean> })
+            if (!it.valid) {
+                throw InvalidCodeException()
+            }
 
+            // code is valid, add the player to the VerifiedProvider so he does not get any reminder messages
+            VerifiedProvider.add(player.name)
+
+            // try to get the current player version
+            val clientVersion = Via.getManager().connectionManager
+                .getConnectedClient(player.uniqueId)
+                ?.protocolInfo
+                ?.protocolVersion() ?: "unknown for ViaVersion (new client version?)"
+
+            // extract the numeric player address
+            val address = player.address?.address?.hostAddress.toString()
+
+            // get the premium status of the player
+            requester.sendCheckPremium(
+                username = name
+            ).thenApplyAsync({ premium ->
+
+                // we have everything, send a create player request
                 requester.sendCreatePlayer(
                     username = name,
-                    address = player.address?.address.toString(), // todo check if it's correct
-                    premium = false, // todo check correctly for premium
-                    clientVersion = Via.getAPI().getPlayerVersion(player).toString(), // todo convert
+                    address = address,
+                    premium = premium,
+                    clientVersion = clientVersion.toString(),
                     codeUsed = code
-                )
+                ).thenApplyAsync({
 
-                // code is valid, add the player to the VerifiedProvider so he does not get any reminder messages
-                VerifiedProvider.add(player.name)
+                    // player feedback
+                    clearPlayerChat(player)
+                    player.sendMessage(verifySuccess)
+                    player.playSound(soundLevelUp)
 
-                clearPlayerChat(player)
-                player.sendMessage(verifySuccess)
-                player.playSound(soundLevelUp)
-
-                // after 10 seconds, kick the player
-                Schedulers.builder()
-                    .sync()
-                    .after(10, TimeUnit.SECONDS)
-                    .run {
-                        player.kick(waitAdmin)
-                    }
+                    // after 10 seconds, kick the player
+                    Schedulers.builder()
+                        .sync()
+                        .after(10, TimeUnit.SECONDS)
+                        .run {
+                            player.kick(waitAdmin)
+                        }
+                }, Schedulers.sync())
 
             }, Schedulers.sync())
+
+        }, Schedulers.sync())
             .exceptionallyAsync({ throwable ->
 
                 val cause = throwable.cause

@@ -21,7 +21,7 @@ class CodeController(val codeService: CodeService)
         return codeService.checkCode(username, code)
     }
 
-    @PostMapping("/delete")
+    @DeleteMapping("/delete")
     fun deleteCode(@RequestParam username: String, @RequestParam code: String): Map<String, Boolean>
     {
         return codeService.deleteCode(username, code)
@@ -33,4 +33,9 @@ class CodeController(val codeService: CodeService)
         return codeService.listAllCodes()
     }
 
+    @GetMapping("/count")
+    fun countCodes(): Long
+    {
+        return codeService.countCodes()
+    }
 }

@@ -66,4 +66,9 @@ class CodeService(val codeRepository: CodeRepository)
         return codeRepository.findAll()
     }
 
+    fun countCodes(): Long
+    {
+        return codeRepository.count()
+    }
+
 }

@@ -1,4 +1,4 @@
-package xyz.atom7.recoveryVelocity;
+package xyz.atom7.recoveryVelocity
 
 import com.google.inject.Inject
 import com.velocitypowered.api.event.Subscribe
@@ -83,8 +83,6 @@ class RecoveryVelocity @Inject constructor(val logger: Logger)
 
         val domain = virtualHost.get().hostName
 
-        println("logging in from: $domain")
-
         event.result = when (domain)
         {
             premiumRequest.premiumDomain -> PreLoginEvent.PreLoginComponentResult.forceOnlineMode()
@@ -96,8 +94,6 @@ class RecoveryVelocity @Inject constructor(val logger: Logger)
     @Subscribe
     fun on(event: LoginEvent)
     {
-        println("LoginEvent: ${event.player.username} is premium=${event.player.isOnlineMode}")
-
         val player = event.player
         premiumRequest.sendPremiumPlayer(player.username, player.isOnlineMode)
     }
@@ -105,8 +101,6 @@ class RecoveryVelocity @Inject constructor(val logger: Logger)
     @Subscribe
     fun on(event: DisconnectEvent)
     {
-        println("DisconnectEvent: ${event.player.username} is premium=${event.player.isOnlineMode}")
-
         val player = event.player
         premiumRequest.removePremiumPlayer(player.username)
     }

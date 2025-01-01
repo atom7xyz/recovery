@@ -5,6 +5,7 @@ import net.kyori.adventure.sound.Sound
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextDecoration
+import okhttp3.RequestBody.Companion.toRequestBody
 import org.bukkit.entity.Player
 
 fun clearPlayerChat(player: Player)
@@ -101,3 +102,5 @@ val somethingWentWrong = Component.text()
         Component.text("Si e' verificato un errore! Comunicalo agli Amministratori! :(", NamedTextColor.RED)
     )
     .build()
+
+val emptyRequestBody = ByteArray(0).toRequestBody(null, 0, 0)

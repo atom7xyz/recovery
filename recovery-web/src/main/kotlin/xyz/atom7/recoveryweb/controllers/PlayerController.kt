@@ -20,15 +20,29 @@ class PlayerController(val playerService: PlayerService)
     }
 
     @GetMapping("/history")
-    fun historyPlayer(@RequestParam username: String): MutableList<Player>
+    fun historyPlayer(@RequestParam username: String,
+                      @RequestParam reversed: Boolean?,
+                      @RequestParam last: Boolean?): List<Player>
     {
-        return playerService.historyPlayer(username)
+        // check if it's requested the last entry of the player
+        if (last == true) {
+            return listOf(playerService.lastHistoryPlayer(username))
+        }
+
+        val history = playerService.historyPlayer(username)
+
+        if (reversed == true) {
+            return history.reversed()
+        }
+
+        return history
     }
 
-    @PostMapping("/premium/set")
-    fun premiumSetPlayer(@RequestParam username: String, @RequestParam premium: Boolean)
+    @PutMapping("/premium/set")
+    fun premiumSetPlayer(@RequestParam username: String, @RequestParam premium: Boolean): String
     {
         playerService.setPremiumPlayer(username, premium)
+        return "OK"
     }
 
     @GetMapping("/premium/check")
@@ -37,10 +51,16 @@ class PlayerController(val playerService: PlayerService)
         return playerService.isPremiumPlayer(username)
     }
 
-    @PostMapping("/premium/remove")
-    fun premiumRemovePlayer(@RequestParam username: String)
+    @DeleteMapping("/premium/remove")
+    fun premiumRemovePlayer(@RequestParam username: String): String
     {
         playerService.removePremiumPlayer(username)
+        return "OK"
     }
 
+    @GetMapping("/count")
+    fun countPlayers(): Long
+    {
+        return playerService.countPlayers()
+    }
 }

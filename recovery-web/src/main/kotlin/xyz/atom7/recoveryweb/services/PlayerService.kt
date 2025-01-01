@@ -45,6 +45,11 @@ class PlayerService(val codeRepository: CodeRepository, val playerRepository: Pl
         return playerRepository.findPlayerByUsername(username)
     }
 
+    fun lastHistoryPlayer(username: String): Player
+    {
+        return playerRepository.findPlayerByUsernameOrderByIdAsc(username).last()
+    }
+
     fun setPremiumPlayer(username: String, premium: Boolean)
     {
         PremiumStatusesProvider.set(username, premium)
@@ -58,6 +63,11 @@ class PlayerService(val codeRepository: CodeRepository, val playerRepository: Pl
     fun removePremiumPlayer(username: String)
     {
         PremiumStatusesProvider.remove(username)
+    }
+
+    fun countPlayers(): Long
+    {
+        return playerRepository.count()
     }
 
 }

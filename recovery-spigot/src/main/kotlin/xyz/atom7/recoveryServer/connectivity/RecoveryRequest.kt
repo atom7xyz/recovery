@@ -9,6 +9,8 @@ import xyz.atom7.recoveryServer.providers.service.GsonProvider
 import xyz.atom7.recoveryServer.serialization.Player
 import xyz.atom7.recoveryServer.serialization.SerialException
 import xyz.atom7.recoveryServer.serialization.ValidCode
+import xyz.atom7.recoveryServer.utils.RequestType
+import xyz.atom7.recoveryServer.utils.emptyRequestBody
 import xyz.sorridi.stone.common.threading.Pool
 import java.util.concurrent.CompletableFuture
 
@@ -29,12 +31,22 @@ class RecoveryRequest(
         pool.shutdown()
     }
 
-    private fun <T> send(httpUrl: HttpUrl, parser: (String) -> T): CompletableFuture<T>
+    private fun <T> send(httpUrl: HttpUrl, type: RequestType, parser: (String) -> T): CompletableFuture<T>
     {
-        val request = Request.Builder()
+        var prototype = Request.Builder()
             .url(httpUrl)
             .addHeader("X-API-KEY", apiKey)
-            .build()
+
+        prototype = when (type)
+        {
+            RequestType.GET -> prototype.get()
+            RequestType.POST -> prototype.post(emptyRequestBody)
+            RequestType.PUT -> prototype.put(emptyRequestBody)
+            RequestType.PATCH -> prototype.patch(emptyRequestBody)
+            RequestType.DELETE -> prototype.delete(emptyRequestBody)
+        }
+
+        val request = prototype.build()
 
         return CompletableFuture.supplyAsync({
 
@@ -52,9 +64,8 @@ class RecoveryRequest(
 
                 parser(strResponse)
             }
-        }, pool.executor).exceptionally { throwable ->
-            println("CompletableFuture completed exceptionally: ${throwable.message}")
-            throw throwable
+        }, pool.executor).exceptionally {
+            throw it
         }
     }
 
@@ -76,8 +87,8 @@ class RecoveryRequest(
             .addQueryParameter("codeUsed", codeUsed.toString())
             .build()
 
-        return send(httpUrl) { response ->
-            GsonProvider.gson.fromJson(response, Player::class.java)
+        return send(httpUrl, RequestType.POST) {
+            GsonProvider.gson.fromJson(it, Player::class.java)
         }
     }
 
@@ -92,8 +103,23 @@ class RecoveryRequest(
             .addQueryParameter("code", codeUsed.toString())
             .build()
 
-        return send(httpUrl) { response ->
-            GsonProvider.gson.fromJson(response, ValidCode::class.java)
+        return send(httpUrl, RequestType.GET) {
+            GsonProvider.gson.fromJson(it, ValidCode::class.java)
+        }
+    }
+
+    fun sendCheckPremium(username: String): CompletableFuture<Boolean>
+    {
+        val httpUrl = HttpUrl.Builder()
+            .scheme(scheme)
+            .host(host)
+            .port(port)
+            .addPathSegments("player/premium/check")
+            .addQueryParameter("username", username)
+            .build()
+
+        return send(httpUrl, RequestType.GET) {
+            it.toBooleanStrict()
         }
     }
 
