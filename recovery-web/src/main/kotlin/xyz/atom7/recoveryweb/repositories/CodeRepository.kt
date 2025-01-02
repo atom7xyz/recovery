@@ -6,12 +6,6 @@ import java.util.*
 
 interface CodeRepository : JpaRepository<RecoveryCode, Long>
 {
-    fun findRecoveryCodeByCode(code: String): MutableList<RecoveryCode>
-
-    fun findRecoveryCodeByUsername(username: String): Optional<RecoveryCode>
-
-    fun findRecoveryCodeByUsernameAndCode(username: String, code: String): Optional<RecoveryCode>
-
     fun findRecoveryCodeByUsernameAndExpired(
         username: String,
         expired: Boolean

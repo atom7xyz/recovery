@@ -5,44 +5,44 @@ import xyz.atom7.recoveryweb.entities.RecoveryCode
 import xyz.atom7.recoveryweb.exceptions.types.CodeExistsException
 import xyz.atom7.recoveryweb.exceptions.types.RecoveryCodeNotFound
 import xyz.atom7.recoveryweb.repositories.CodeRepository
+import java.time.LocalDateTime
 import kotlin.random.Random
 
 @Service
 class CodeService(val codeRepository: CodeRepository)
 {
+
     @Throws(CodeExistsException::class)
     fun createCode(username: String): RecoveryCode
     {
         val codeFound = codeRepository.findRecoveryCodeByUsernameAndExpired(username, false)
-        var recoveryCode: RecoveryCode
 
         codeFound.ifPresent {
-            recoveryCode = codeFound.get()
-            throw CodeExistsException(username, recoveryCode)
+            if (!checkExpiration(it)) {
+                throw CodeExistsException(username, it)
+            }
         }
 
         val code = Random.nextInt(1000, 9999).toString()
 
-        recoveryCode = RecoveryCode(
+        val recoveryCode = RecoveryCode(
             username = username,
             code = code
         )
-
         codeRepository.save(recoveryCode)
 
         return recoveryCode
     }
 
-    @Throws(RecoveryCodeNotFound::class)
     fun checkCode(username: String, code: String): Map<String, Boolean>
     {
-        val codeFound = codeRepository.findRecoveryCodeByUsernameAndCode(username, code)
+        val codeFound = codeRepository.findRecoveryCodeByUsernameAndCodeAndExpired(username, code, false)
 
-        if (!codeFound.isPresent) {
-            throw RecoveryCodeNotFound(username, code)
+        codeFound.ifPresent {
+            checkExpiration(it)
         }
 
-        return mapOf("valid" to !codeFound.get().expired)
+        return mapOf("valid" to (codeFound.isPresent && !codeFound.get().expired))
     }
 
     @Throws(RecoveryCodeNotFound::class)
@@ -50,7 +50,7 @@ class CodeService(val codeRepository: CodeRepository)
     {
         val codeFound = codeRepository.findRecoveryCodeByUsernameAndCodeAndExpired(username, code, false)
 
-        if (!codeFound.isPresent) {
+        if (codeFound.isEmpty) {
             throw RecoveryCodeNotFound(username, code)
         }
 
@@ -69,6 +69,30 @@ class CodeService(val codeRepository: CodeRepository)
     fun countCodes(): Long
     {
         return codeRepository.count()
+    }
+
+    /**
+     * Checks if the given recovery code is expired and updates its state if necessary.
+     *
+     * @param code The [RecoveryCode] to evaluate.
+     * @return `true` if the recovery code is expired, `false` otherwise.
+     *
+     * This function marks the code as expired and saves it to the repository if the expiration date
+     * is before or equal to the current time.
+     */
+    private fun checkExpiration(code: RecoveryCode): Boolean
+    {
+        val now = LocalDateTime.now()
+
+        val expiredTimeAgo = code.expirationDate.isBefore(now)
+        val expiredNow = code.expirationDate.isEqual(now)
+
+        if (expiredTimeAgo || expiredNow) {
+            code.expired = true
+            codeRepository.save(code)
+        }
+
+        return expiredTimeAgo || expiredNow
     }
 
 }
