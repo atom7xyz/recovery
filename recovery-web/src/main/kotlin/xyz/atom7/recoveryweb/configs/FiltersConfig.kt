@@ -27,7 +27,7 @@ class FiltersConfig
         val registrationBean = FilterRegistrationBean<ApiKeyFilter>()
 
         registrationBean.filter = apiKeyFilter
-        registrationBean.addUrlPatterns("/code/*", "/player/*")
+        registrationBean.addUrlPatterns("*")
 
         return registrationBean
     }

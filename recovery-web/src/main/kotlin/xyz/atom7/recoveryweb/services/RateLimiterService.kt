@@ -5,6 +5,7 @@ import org.springframework.scheduling.annotation.EnableScheduling
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
 import xyz.atom7.recoveryweb.logging.RateLimitType
+import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -18,8 +19,8 @@ class RateLimiterService(
     val rateLimitWrongApiKey: Int
 )
 {
-    private val actionRequests: MutableMap<String, AtomicInteger> = mutableMapOf()
-    private val wrongApiKeyRequests: MutableMap<String, AtomicInteger> = mutableMapOf()
+    private val actionRequests: MutableMap<String, AtomicInteger> = ConcurrentHashMap()
+    private val wrongApiKeyRequests: MutableMap<String, AtomicInteger> = ConcurrentHashMap()
 
     fun hasReachedRateLimit(address: String, rateLimitType: RateLimitType): Boolean
     {

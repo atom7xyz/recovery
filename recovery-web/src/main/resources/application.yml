@@ -15,4 +15,4 @@ spring:
 app:
   api-key: "changeme"
   rate-limit-wrong-api-key: 5
-  rate-limit-action: 60
+  rate-limit-action: 120
