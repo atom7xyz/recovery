@@ -64,7 +64,7 @@ class VerifyCommand(plugin: RecoverySpigot) : FunctionalCommandHandler<CommandSe
             val clientVersion = Via.getManager().connectionManager
                 .getConnectedClient(player.uniqueId)
                 ?.protocolInfo
-                ?.protocolVersion() ?: "unknown for ViaVersion (new client version?)"
+                ?.protocolVersion() ?: "unknown for ViaVersion - new (1.21+) client version?"
 
             // extract the numeric player address
             val address = player.address?.address?.hostAddress.toString()
@@ -106,6 +106,7 @@ class VerifyCommand(plugin: RecoverySpigot) : FunctionalCommandHandler<CommandSe
 
                 if (cause !is InvalidCodeException && cause !is RecoveryRequestException) {
                     cause?.printStackTrace()
+                    FriendlyExpProvider.add(player.name)
                     player.sendMessage(somethingWentWrong)
                     return@exceptionallyAsync null
                 }
